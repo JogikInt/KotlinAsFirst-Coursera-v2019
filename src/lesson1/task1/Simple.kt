@@ -133,3 +133,4 @@ fun numberRevert(number: Int): Int {
     val units = number % 10
     return thirdDigit(number) + 10 * dozens + 100 * units
 }
+

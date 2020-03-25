@@ -1,5 +1,6 @@
 package lesson4.task1
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -91,6 +92,7 @@ class Tests {
         assertEquals(3.0, abs(listOf(3.0)), 1e-5)
         assertEquals(5.0, abs(listOf(3.0, -4.0)), 1e-5)
         assertEquals(8.774964, abs(listOf(4.0, -5.0, 6.0)), 1e-5)
+        assertEquals(5.477225575, abs(listOf(-1.0, 2.0, 3.0, 4.0)), 1e-5)
     }
 
     @Test
@@ -226,6 +228,16 @@ class Tests {
         assertEquals("MCMLXXVIII", roman(1978))
         assertEquals("DCXCIV", roman(694))
         assertEquals("XLIX", roman(49))
+    }
+
+    @Test
+    fun verboseThousand() {
+        assertEquals("триста девятнадцать", verboseThousand(319, "M"))
+        assertEquals("триста десять", verboseThousand(310, "M"))
+        assertEquals("триста одна", verboseThousand(301, "F"))
+        assertEquals("девятьсот одиннадцать", verboseThousand(911, "M"))
+        assertThrows(java.lang.Exception::class.java) { verboseThousand(9112, "M") }
+        assertEquals("", verboseThousand(0, "M"))
     }
 
     @Test

@@ -123,6 +123,10 @@ class Tests {
     fun containsIn() {
         assertTrue(containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")))
         assertFalse(containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")))
+        assertFalse(containsIn(mapOf("c" to "nope"), mapOf("a" to "zee", "b" to "sweet")))
+        assertFalse(containsIn(mapOf("c" to "nope"), mapOf()))
+        assertTrue(containsIn(mapOf(), mapOf("a" to "zee", "b" to "sweet")))
+        assertTrue(containsIn(mapOf(), mapOf()))
     }
 
     @Test
@@ -227,12 +231,20 @@ class Tests {
                 "печенье"
             )
         )
+        assertEquals(
+            "Прага",
+            findCheapestStuff(
+                mapOf("Мария" to ("печенье" to 20.0), "Орео" to ("печенье" to 100.0), "Прага" to ("торт" to 900.0)),
+                "торт"
+            )
+        )
     }
 
     @Test
     @Tag("Normal")
     fun canBuildFrom() {
         assertFalse(canBuildFrom(emptyList(), "foo"))
+        assertTrue(canBuildFrom(listOf('n', 'm'), ""))
         assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
     }

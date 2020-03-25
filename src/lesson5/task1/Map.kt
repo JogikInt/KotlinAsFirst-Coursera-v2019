@@ -2,6 +2,9 @@
 
 package lesson5.task1
 
+import kotlinx.html.attributes.stringSetDecode
+import kotlin.math.min
+
 /**
  * Пример
  *
@@ -91,7 +94,26 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
+
+    val reverseGrades = mutableMapOf<Int, List<String>>()
+    val satisfactory = mutableListOf<String>()
+    val good = mutableListOf<String>()
+    val excellent = mutableListOf<String>()
+
+    for ((name, grade) in grades) {
+        when (grade) {
+            3 -> satisfactory.add(name)
+            4 -> good.add(name)
+            5 -> excellent.add(name)
+        }
+    }
+    if (satisfactory.isNotEmpty()) reverseGrades[3] = satisfactory
+    if (good.isNotEmpty()) reverseGrades[4] = good
+    if (excellent.isNotEmpty()) reverseGrades[5] = excellent
+
+    return reverseGrades
+}
 
 /**
  * Простая
@@ -103,7 +125,15 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")) -> true
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
-fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
+fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
+    for ((key, value) in a) {
+        if (b.getOrDefault(key, null.toString()) == value) continue
+        else {
+            return false
+        }
+    }
+    return true
+}
 
 /**
  * Простая
@@ -119,7 +149,13 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
  *   subtractOf(a = mutableMapOf("a" to "z"), mapOf("a" to "z"))
  *     -> a changes to mutableMapOf() aka becomes empty
  */
-fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit = TODO()
+fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
+    for ((key, value) in b) {
+        if (containsIn(mapOf(key to value), a)) {
+            a.remove(key)
+        }
+    }
+}
 
 /**
  * Простая
@@ -128,7 +164,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit = TO
  * В выходном списке не должно быть повторяюихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().intersect(b.toSet()).toList()
 
 /**
  * Средняя
@@ -147,7 +183,32 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> = TODO()
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+
+    val result = mutableMapOf<String, String>()
+    val inBothMaps = whoAreInBoth(mapA.keys.toList(), mapB.keys.toList())
+    println("In both maps: $inBothMaps")
+    val mapAOnly = mapA.keys - inBothMaps
+    println("In map A only: $mapAOnly")
+    val mapBOnly = mapB.keys - inBothMaps
+    println("In map B only: $mapBOnly")
+
+    for (entry in inBothMaps) {
+        if (mapA[entry] == mapB[entry]) result[entry] = mapA[entry]!!
+        else result[entry] = listOf(mapA[entry]!!, mapB[entry]!!).joinToString(separator = ", ")
+    }
+
+    for (key in mapAOnly) {
+        result[key] = mapA[key]!!
+    }
+
+    for (key in mapBOnly) {
+        result[key] = mapB[key]!!
+    }
+
+    return result
+
+}
 
 /**
  * Средняя
@@ -159,7 +220,30 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+
+    val setOfStocks = mutableSetOf<String>()
+    val result = mutableMapOf<String, Double>()
+
+    for ((ticker, _) in stockPrices) setOfStocks.add(ticker)
+
+    for (name in setOfStocks) {
+
+        var numberOfPrices = 0
+        var avgPriceStepOne = 0.0
+
+        for ((ticker, price) in stockPrices) {
+            if (ticker == name) {
+                numberOfPrices++
+                avgPriceStepOne += price
+            }
+        }
+
+        val avgPrice = avgPriceStepOne / numberOfPrices
+        result[name] = avgPrice
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -176,7 +260,23 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? = TODO()
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+
+    val allOfGivenKind = mutableMapOf<Double, String>()
+    val pricesOfGivenKind = mutableListOf<Double>()
+    for ((key, value) in stuff) {
+        if (value.first == kind) {
+            allOfGivenKind[value.second] = key
+            pricesOfGivenKind.add(value.second)
+            // Здесь необходима проверка на уникальность цен.
+            // Задача не рассматривает случай двух товаров одинаковой стоимости.
+        }
+    }
+    return if (pricesOfGivenKind.isNotEmpty()) {
+        pricesOfGivenKind.sort()
+        allOfGivenKind[pricesOfGivenKind[0]]
+    } else null
+}
 
 /**
  * Средняя
@@ -187,7 +287,15 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+
+    for (char in word) {
+        if (chars.toSet().contains(char)) continue
+        else return false
+    }
+    return true
+
+}
 
 /**
  * Средняя
